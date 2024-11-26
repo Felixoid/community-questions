@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<clickhouse>
+    <logger>
+        <log>/var/log/clickhouse-server/logger.log</log>
+        <errorlog>/var/log/clickhouse-server/logger.errorlog</errorlog>
+    </logger>
+		
+    <listen_host>0.0.0.0</listen_host>
+    <http_port>8123</http_port>
+    <tcp_port>9000</tcp_port>
+
+    <!-- <max_connections>4096</max_connections> -->
+    <!-- <keep_alive_timeout>3</keep_alive_timeout> -->
+    <!-- <max_concurrent_queries>100</max_concurrent_queries> -->
+    <!-- <uncompressed_cache_size>8589934592</uncompressed_cache_size> -->
+    <!-- <mark_cache_size>5368709120</mark_cache_size> -->
+
+    <path>/var/lib/clickhouse/</path>
+    <tmp_path>/var/lib/clickhouse/tmp/</tmp_path>
+    <user_files_path>/var/lib/clickhouse/user_files/</user_files_path>
+
+	<macros>
+		<replica1>replica1</replica1>
+		<layer1>1</layer1>
+		<shard1>shard1</shard1>
+		<replica2>replica2</replica2>
+		<layer2>2</layer2>
+		<shard2>shard2</shard2>
+    </macros>
+	
+
+	<users_config>users.xml</users_config>
+
+	<distributed_ddl>
+		<max_partitions_per_insert_block>1000</max_partitions_per_insert_block>
+	</distributed_ddl>
+	
+	<remote_servers>
+		<my_cluster>
+			<shard>
+				<replica>
+					<host>clickhouse-main</host>
+					<port>9000</port>
+				</replica>
+				<replica>
+					<host>clickhouse-replica</host>
+					<port>9000</port>
+				</replica>
+			</shard>
+			<shard>
+				<replica>
+					<host>clickhouse-main-2</host>
+					<port>9000</port>
+				</replica>
+				<replica>
+					<host>clickhouse-replica-2</host>
+					<port>9000</port>
+				</replica>
+			</shard>
+		</my_cluster>
+	</remote_servers>
+
+    <zookeeper>
+		<node index="1">
+			<host>zoo1</host>
+			<port>9181</port>
+		</node>
+		<node index="2">
+			<host>zoo2</host>
+			<port>9181</port>
+		</node>
+		<node index="3">
+			<host>zoo3</host>
+			<port>9181</port>
+		</node>		
+    </zookeeper>
+		
+
+</clickhouse>

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<clickhouse>
+  <test_merged_top>
+    <test_merged_second>
+      <test_merged_third>
+        <test_merged_fourth>
+          <test_merged_fifth>
+            <host>server1.tld</host>
+            <port>9000</port>
+          </test_merged_fifth>
+        </test_merged_fourth>
+      </test_merged_third>
+    </test_merged_second>
+  </test_merged_top>
+</clickhouse>

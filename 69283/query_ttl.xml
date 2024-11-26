@@ -1,0 +1,9 @@
+<yandex>
+  <query_log>
+    <database>system</database>
+    <table>query_log</table>
+    <partition_by>toYYYYMM(event_date)</partition_by>
+    <ttl>event_date + INTERVAL 30 DAY DELETE</ttl>
+    <flush_interval_milliseconds>7500</flush_interval_milliseconds>
+  </query_log>
+</yandex>
