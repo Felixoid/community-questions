@@ -1,0 +1,45 @@
+---
+name: clickhouse-s3-bug
+
+services:
+
+  clickhouse:
+    image: clickhouse:24.10
+    restart: on-failure
+    cap_add: &caps
+      - SYS_PTRACE
+      - NET_ADMIN
+      - IPC_LOCK
+      - SYS_NICE
+    depends_on:
+      - minio-side
+    ports:
+      - "127.0.0.1:9000:9000"
+    volumes:
+      - click-data:/var/lib/clickhouse/
+      - ./initdb.d:/docker-entrypoint-initdb.d/:ro
+      - ./clickhouse/etc:/etc/clickhouse-server/:ro
+      - ./clickhouse/logs:/var/log/clickhouse-server/
+
+  minio:
+    image: &minio minio/minio:RELEASE.2024-11-07T00-52-20Z
+    restart: on-failure
+    environment: &minio-env
+      MC_HOST_minio: http://minioadmin:minioadmin@minio:9000
+    ports:
+      - "127.0.0.1:9001:9001"
+    volumes:
+      - minio-data:/data
+    command: server /data --console-address :9001
+  minio-side:
+    image: *minio
+    restart: 'no'
+    environment: *minio-env
+    entrypoint: ['bash']
+    depends_on:
+      - minio
+    command: -c 'mc mb minio/clickhouse'
+
+volumes:
+  click-data: null
+  minio-data: null
