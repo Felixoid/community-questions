@@ -1,0 +1,86 @@
+services:
+  clickhouse-main:
+    image: clickhouse/clickhouse-server:25.1.5.31
+    container_name: clickhouse-main
+    restart: always
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - clickhouse_data_main:/var/lib/clickhouse
+      - ./initdb.d:/docker-entrypoint-initdb.d/:ro
+      - ./clickhouse_config.xml:/etc/clickhouse-server/config.d/config.xml
+      - ./user-config.xml:/etc/clickhouse-server/users.xml
+    environment:
+      CLICKHOUSE_SKIP_USER_SETUP: "1"
+    networks:
+      - mynetwork
+    depends_on:
+      - zoo1
+      - zoo2
+      - zoo3
+
+  clickhouse-replica:
+    image: clickhouse/clickhouse-server:25.1.5.31
+    container_name: clickhouse-replica
+    restart: always
+    ports:
+      - "8124:8123"
+      - "9001:9000"
+    volumes:
+      - clickhouse_data_replica:/var/lib/clickhouse
+      - ./initdb.d:/docker-entrypoint-initdb.d/:ro
+      - ./clickhouse_config.xml:/etc/clickhouse-server/config.d/config.xml
+      - ./user-config.xml:/etc/clickhouse-server/users.xml
+    environment:
+      CLICKHOUSE_SKIP_USER_SETUP: "1"
+      CLICKHOUSE_REPLICA: "1"
+      CLICKHOUSE_MAIN_HOST: "clickhouse-main"
+    networks:
+      - mynetwork
+    depends_on:
+      - zoo1
+      - zoo2
+      - zoo3
+
+  zoo1:
+    image: clickhouse/clickhouse-keeper:25.1.5.31
+    container_name: zoo1
+    restart: always
+    environment:
+      KEEPER_ID: "1"
+    volumes:
+      - ./keeper_config.xml:/etc/clickhouse-keeper/keeper_config/config.xml
+    networks:
+      - mynetwork
+
+  zoo2:
+    image: clickhouse/clickhouse-keeper:25.1.5.31
+    container_name: zoo2
+    restart: always
+    environment:
+      KEEPER_ID: "2"
+    volumes:
+      - ./keeper_config.xml:/etc/clickhouse-keeper/keeper_config/config.xml
+    networks:
+      - mynetwork
+
+  zoo3:
+    image: clickhouse/clickhouse-keeper:25.1.5.31
+    container_name: zoo3
+    restart: always
+    environment:
+      KEEPER_ID: "3"
+    volumes:
+      - ./keeper_config.xml:/etc/clickhouse-keeper/keeper_config/config.xml
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+
+volumes:
+  clickhouse_data_main:
+  clickhouse_data_replica:
+  clickhouse_data_main-2:
+  clickhouse_data_replica-2:
