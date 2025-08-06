@@ -27,4 +27,13 @@ RUN sed -i '/^OPTIONS/ s/strip/!strip/' /etc/makepkg.conf & \
     yay -S --noconfirm --asdeps python-trio && \
     rm -rf ~/.cache
 
+COPY python-webscout.patch /tmp/python-webscout.patch
+RUN yay -S --noconfirm --downloadonly python-webscout && \
+    cd ~/.cache/yay/python-webscout && \
+    git clean -fdx && \
+    patch -p1 < /tmp/python-webscout.patch && \
+    makepkg -si --noconfirm && \
+    cd ~/ && \
+    rm -rf ~/.cache
+
 CMD ["python", "-m", "webscout"]
